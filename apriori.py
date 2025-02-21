@@ -26,37 +26,44 @@ class AprioriMiner:
         self.boundary_sets = set()   # stores minimal infrequent itemsets
         
         # Memory management: track which transactions can be safely ignored
-        self.active_transactions = set(range(self.n_transactions))
+        self.unique_transactions = set(range(self.n_transactions))
     
     def estimate_support(self, itemset: frozenset) -> bool:
         """
         Estimate if an itemset is likely to be frequent using sampling.
         Implementation of the "carefully tuned estimation procedure" from the paper.
+
+        The fundamental idea behind this method comes from statistics: 
+        Instead of counting the exact number of times an itemset appears in all transactions, (which could be millions), 
+        we can take a smaller random sample and use that to estimate the true frequency. 
+        This is similar to how polling works - you don't need to ask everyone in a country their opinion to get a reasonably accurate prediction.
         
         Returns:
             bool: True if itemset is expected to be frequent
         """
         # Take a random sample of transactions
-        sample_indices = random.sample(list(self.active_transactions), self.sample_size)
+        sample_indices = random.sample(list(self.unique_transactions), self.sample_size) # sample 1000 transactions randomly
         
         # Count occurrences in sample
-        count = sum(1 for idx in sample_indices if itemset.issubset(self.transactions[idx]))
-        p_hat = count / self.sample_size
+        count = sum(1 for idx in sample_indices if itemset.issubset(self.transactions[idx])) # count no.of times itemset appears in sample
+        p_hat = count / self.sample_size # estimate probability
         
         # Calculate upper bound of confidence interval
-        margin = self.z_score * math.sqrt((p_hat * (1 - p_hat)) / self.sample_size)
-        upper_bound = p_hat + margin
+        margin = self.z_score * math.sqrt((p_hat * (1 - p_hat)) / self.sample_size) # confidence interval calcuation
+        upper_bound = p_hat + margin # take the upper bound of the estimate
         
         return upper_bound >= self.min_support
     
     def find_frequent_1_itemsets(self) -> Set[frozenset]:
         """
         Find all frequent 1-itemsets by scanning the database once.
+
+        This function essentially is the first step of the Apriori algorithm. Where we are looking for single items that meet the minimum support threshold.
         """
-        item_counts = defaultdict(int)
+        item_counts = defaultdict(int) # starts with empty dictionary of counts
         
         # Count occurrences of each item
-        for idx in self.active_transactions:
+        for idx in self.unique_transactions:
             for item in self.transactions[idx]:
                 item_counts[item] += 1
         
@@ -108,7 +115,7 @@ class AprioriMiner:
         removable_transactions = set()
         
         # Count support for each candidate
-        for idx in self.active_transactions:
+        for idx in self.unique_transactions:
             transaction = self.transactions[idx]
             found_frequent = False
             
@@ -122,7 +129,7 @@ class AprioriMiner:
                 removable_transactions.add(idx)
         
         # Memory management: remove unnecessary transactions
-        self.active_transactions -= removable_transactions
+        self.unique_transactions -= removable_transactions
         
         # Convert counts to support values
         return {itemset: count / self.n_transactions for itemset, count in supports.items()}
@@ -167,7 +174,8 @@ if __name__ == "__main__":
     transactions = generator.generate_dataset(100000)
 
     # Run Apriori algorithm
-    miner = AprioriMiner(transactions, min_support=0.01)
+    miner = AprioriMiner(transactions, min_support=0.1)
     frequent_itemsets = miner.mine_frequent_itemsets()
     for k, itemsets in frequent_itemsets.items():
-        print(len(itemsets))
+        print(f"Level {k}: length {len(itemsets)}, items {itemsets}")
+        print("-" * 20)

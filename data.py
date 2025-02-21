@@ -89,7 +89,8 @@ class TransactionGenerator:
             'total_transactions': len(transactions),
             'avg_items_per_transaction': sum(len(t) for t in transactions) / len(transactions),
             'item_frequencies': defaultdict(int),
-            'category_frequencies': defaultdict(int)
+            'category_frequencies': defaultdict(int),
+            'largest_transaction': max(transactions, key=len)
         }
         
         # Calculate item and category frequencies
@@ -111,6 +112,8 @@ class TransactionGenerator:
             category: count/len(transactions) 
             for category, count in stats['category_frequencies'].items()
         }
+
+        stats['largest_transaction'] = list(stats['largest_transaction'])
         
         return stats
 
@@ -127,6 +130,7 @@ if __name__ == "__main__":
     print(f"\nDataset Statistics:")
     print(f"Total Transactions: {stats['total_transactions']}")
     print(f"Average Items per Transaction: {stats['avg_items_per_transaction']:.2f}")
+    print(f"Largest Transaction: {stats['largest_transaction']}")
     
     print("\nCategory Frequencies:")
     for category, freq in sorted(stats['category_frequencies'].items(), 
