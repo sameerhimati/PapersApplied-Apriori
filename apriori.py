@@ -5,13 +5,13 @@ from typing import List, Set, Dict, Tuple
 from data import TransactionGenerator
 
 class AprioriMiner:
-    def __init__(self, transactions: List[Set[str]], min_support: float, sample_size: int = 1000, confidence_level: float = 0.95):
+    def __init__(self, transactions: List[Set[str]], min_support: float = 0.01, sample_size: int = 1000, confidence_level: float = 0.95):
         """
         Initialize the Apriori algorithm with optimization techniques from the 1993 paper.
         
         Args:
             transactions: List of sets, where each set contains items in a transaction
-            min_support: Minimum support threshold (between 0 and 1)
+            min_support: Minimum support threshold (between 0 and 1) (default 1%)
             sample_size: Size of sample for support estimation
             confidence_level: Confidence level for support estimation (default 0.95)
         """
