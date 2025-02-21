@@ -7,7 +7,7 @@ class TransactionGenerator:
     def __init__(self):
         # Define product categories and items within each category
         self.categories = {
-            'dairy': ['milk', 'cheese', 'yogurt', 'butter', 'cream'],
+            'dairy': ['milk', 'cheese', 'yogurt', 'butter', 'cream', 'cream cheese'],
             'bread': ['white bread', 'wheat bread', 'bagels', 'rolls', 'croissants'],
             'produce': ['apples', 'bananas', 'carrots', 'lettuce', 'tomatoes'],
             'meat': ['chicken', 'beef', 'pork', 'fish', 'ham'],

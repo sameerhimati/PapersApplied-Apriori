@@ -2,6 +2,7 @@ from collections import defaultdict
 import math
 import random
 from typing import List, Set, Dict, Tuple
+from data import TransactionGenerator
 
 class AprioriMiner:
     def __init__(self, transactions: List[Set[str]], min_support: float, sample_size: int = 1000, confidence_level: float = 0.95):
@@ -161,20 +162,12 @@ class AprioriMiner:
 # Example usage:
 if __name__ == "__main__":
     # Sample transaction database
-    transactions = [
-        {"bread", "milk"},
-        {"bread", "diapers", "beer", "eggs"},
-        {"milk", "diapers", "beer", "cola"},
-        {"bread", "milk", "diapers", "beer"},
-        {"bread", "milk", "diapers", "cola"}
-    ]
-    
-    # Initialize and run algorithm
-    miner = AprioriMiner(transactions, min_support=0.3)
+    # Generate data
+    generator = TransactionGenerator()
+    transactions = generator.generate_dataset(100000)
+
+    # Run Apriori algorithm
+    miner = AprioriMiner(transactions, min_support=0.01)
     frequent_itemsets = miner.mine_frequent_itemsets()
-    
-    # Print results
     for k, itemsets in frequent_itemsets.items():
-        print(f"\nFrequent {k}-itemsets:")
-        for itemset in itemsets:
-            print(itemset)
+        print(len(itemsets))
